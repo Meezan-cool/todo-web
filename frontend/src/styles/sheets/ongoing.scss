@@ -1,5 +1,78 @@
+$OnGoingFont : "Inter", sans-serif;
+$CurrentMonth : "Poppins", sans-serif;
 .ongoing{
     min-height: 100vh;
     width: 100%;
     background: linear-gradient(to top, #b7daf1 , #d4e5f0 );
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px 15px;
+    font-family: $OnGoingFont;
+    .month-box{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        .curr-month{
+            font-size: 25px;
+            letter-spacing: .5px;
+            font-weight: 500;
+            font-family: $CurrentMonth;
+            transition: all 400ms ease;
+            color: #3E2AA6;
+        }
+        .month-btn{
+            position: absolute;
+            transition: all 400ms ease;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            .sl-icon{color: #454444;}
+            &.prev{left: 0 ; .sl-icon{rotate: 90deg;}}
+            &.next{right: 0; .sl-icon{rotate: -90deg;}}
+        }
+    }
+    .date-box {
+        overflow-x: scroll;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        display: flex;
+        // background-color: salmon;
+        width: 100%;
+      }
+    
+      .date-item {
+        flex: 0 0 25%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        scroll-snap-align: start;
+        &.active .date-show{
+            background-color: #3D29AC;
+            color: white;
+            font-weight: 500;
+            span{font-weight: normal;}
+          }
+        .date-show{
+            background-color: white;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            color: #3D29AC;
+            width: 80%;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 7px; font-size: 20px;
+            align-items: center;
+            border-radius: 35px;
+            transition: all 400ms ease;
+            span{font-size: 12px;letter-spacing: 1px;}
+        }
+      }
 }
