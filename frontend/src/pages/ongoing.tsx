@@ -7,10 +7,27 @@ const OnGoing: React.FC = () => {
   const currentYear = moment().year();
   const today = moment();
   const [currentMonth, setCurrentMonth] = useState(moment().year(currentYear));
-  // const [currentDate, setCurrentDate] = useState<number>(today.date()); // Initialize with current date
-  const [activeDate, setActiveDate] = useState<number | null>(today.date()); // Store active date separately
+  const [activeDate, setActiveDate] = useState<number | null>(today.date());
+  const [currentTime, setCurrentTime] = useState(moment());
+
   const datesContainerRef = useRef<HTMLDivElement | null>(null);
   const activeDateRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(moment());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const getTimePosition = (time: moment.Moment) => {
+    const hours = time.hours();
+    const minutes = time.minutes();
+    return ((hours * 60 + minutes) * 100) / (24 * 60); // Percentage of the day
+  };
+
+  const redLinePosition = getTimePosition(currentTime);
 
   useEffect(() => {
     if (datesContainerRef.current && activeDateRef.current && activeDate !== null) {
@@ -22,13 +39,11 @@ const OnGoing: React.FC = () => {
   const prevMonth = () => {
     const newMonth = currentMonth.clone().subtract(1, 'month');
     setCurrentMonth(newMonth);
-    // Do not change activeDate when switching months
   };
 
   const nextMonth = () => {
     const newMonth = currentMonth.clone().add(1, 'month');
     setCurrentMonth(newMonth);
-    // Do not change activeDate when switching months
   };
 
   const getDatesOfMonth = (month: moment.Moment) => {
@@ -47,6 +62,8 @@ const OnGoing: React.FC = () => {
   };
 
   const datesOfMonth = getDatesOfMonth(currentMonth);
+
+  const hours = Array.from({ length: 24 }, (_, i) => i); // Create an array of hours from 0 to 23
 
   return (
     <div className="ongoing">
@@ -79,6 +96,26 @@ const OnGoing: React.FC = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="ongoing-box">
+        <div className="title-box">Ongoing</div>
+        <div className="ongoing-date-box">
+          <div className="timeline">
+            {hours.map((hour) => (
+              <div key={hour} className="timeline-hour">
+                <span>{moment({ hour }).format('hh A')}</span>
+              </div>
+            ))}
+            <div
+              className="time-indicator"
+              style={{ top: `${redLinePosition}%` }}
+               // Tooltip with the current time
+            >
+              <div className="circle-indicator" title={currentTime.format('h:mm A')}></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

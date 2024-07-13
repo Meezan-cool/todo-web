@@ -7,7 +7,7 @@ $CurrentMonth : "Poppins", sans-serif;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 30px 15px;
+    padding: 30px 0px 0px 0px;
     font-family: $OnGoingFont;
     .month-box{
         width: 100%;
@@ -18,10 +18,10 @@ $CurrentMonth : "Poppins", sans-serif;
         .curr-month{
             font-size: 25px;
             letter-spacing: .5px;
-            font-weight: 500;
+            font-weight: 600;
             font-family: $CurrentMonth;
             transition: all 400ms ease;
-            color: #3E2AA6;
+            color: #20155b;
         }
         .month-btn{
             position: absolute;
@@ -31,8 +31,8 @@ $CurrentMonth : "Poppins", sans-serif;
             align-items: center;
             gap: 5px;
             .sl-icon{color: #454444;}
-            &.prev{left: 0 ; .sl-icon{rotate: 90deg;}}
-            &.next{right: 0; .sl-icon{rotate: -90deg;}}
+            &.prev{left: 15px; .sl-icon{rotate: 90deg;}}
+            &.next{right: 15px  ; .sl-icon{rotate: -90deg;}}
         }
     }
     .date-box {
@@ -42,9 +42,8 @@ $CurrentMonth : "Poppins", sans-serif;
         display: flex;
         // background-color: salmon;
         width: 100%;
-      }
-    
-      .date-item {
+    }
+    .date-item {
         flex: 0 0 25%;
         height: auto;
         display: flex;
@@ -74,5 +73,105 @@ $CurrentMonth : "Poppins", sans-serif;
             transition: all 400ms ease;
             span{font-size: 12px;letter-spacing: 1px;}
         }
-      }
+    }
+    .ongoing-box{
+        flex: 1;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        .title-box{
+            padding: 0 15px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #20155b;
+            font-family: $CurrentMonth;
+        }
+        .ongoing-date-box{
+            position: relative;
+            flex: 1;
+            width: 100%;
+            overflow: scroll;
+            padding: 20px 0;
+        }
+    }
+
 }
+.ongoing-date-box {
+  
+    .timeline {
+      position: absolute;
+      width: 100%;
+      z-index: 1;
+  
+      .timeline-hour {
+        height: 60px; 
+        text-align: left;
+        padding: 0 15px;
+        position: relative;
+        font-size: 13.5px;
+        color: #8794A3;
+        font-weight: 500;
+        span{
+            position: relative;
+            top: -6.7px;
+        }
+      }
+  
+      .time-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        width: calc(100% - 110px);
+        transition: all 400ms ease;
+        height: 1px;
+        right: 15px;
+        background-color: red;
+        z-index: 2;
+        .circle-indicator{
+            position: absolute;
+            left: -20px;
+            width: 13px;height: 13px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            &::before{
+                content: "";
+                position: absolute;
+                height: 5px;
+                width: 5px;
+                border-radius: 50%;
+                background: red;
+            }
+        }
+      }
+    }
+  
+    .time-slot {
+      position: absolute;
+      width: calc(100% - 20px);
+      background-color: #dcd0ff;
+      border: 1px solid #bdb3ff;
+      border-radius: 4px;
+      padding: 10px;
+      z-index: 3;
+  
+      .time-slot-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+  
+      .time-slot-participants {
+        margin-bottom: 5px;
+      }
+  
+      .time-slot-time {
+        font-size: 0.9em;
+        color: #666;
+      }
+    }
+  }
+  
