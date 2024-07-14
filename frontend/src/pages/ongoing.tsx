@@ -16,15 +16,18 @@ const OnGoing: React.FC = () => {
 
   // Sample tasks data
   const tasks = [
-    { id: 1, title: 'Task 1', start: '09:00', end: '11:00' },
-    { id: 2, title: 'Task 2', start: '12:00', end: '13:30' },
-    { id: 3, title: 'Task 3', start: '14:00', end: '15:30' },
+    { id: 1, title: 'Mobile App Design', start: '09:00', end: '11:00', date: '14 july' },
+    { id: 2, title: 'Web Development', start: '14:00', end: '15:30', date: '14 july' },
+    { id: 3, title: 'API Testing', start: '16:00', end: '18:30', date: '14 july' },
+    { id: 4, title: 'Task Management', start: '19:00', end: '21:30', date: '14 july' },
+    { id: 5, title: 'Task Management', start: '19:00', end: '21:30', date: '15 july' },
+    { id: 6, title: 'Attain Meeting With Maroof', start: '01:00', end: '04:30', date: '15 july' },
   ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(moment());
-    }, 60000); // Update every minute
+    }, 60000); 
 
     return () => clearInterval(timer);
   }, []);
@@ -60,7 +63,7 @@ const OnGoing: React.FC = () => {
       const containerHeight = ongoingDateBoxRef.current.offsetHeight;
       const scrollPosition = (redLinePosition / 100) * containerHeight - 100;
       ongoingDateBoxRef.current.scrollTop = redLinePosition * 13;
-      console.log(scrollPosition > 0 ? scrollPosition * 5 : 0)
+      console.log(scrollPosition > 0 ? scrollPosition * 5 : 0);
     }
   }, [currentTime, redLinePosition]);
 
@@ -92,6 +95,11 @@ const OnGoing: React.FC = () => {
   const datesOfMonth = getDatesOfMonth(currentMonth);
 
   const hours = Array.from({ length: 24 }, (_, i) => i); // Create an array of hours from 0 to 23
+
+  const filteredTasks = tasks.filter((task) => {
+    const taskDate = moment(task.date, 'D MMM');
+    return taskDate.date() === activeDate && taskDate.month() === currentMonth.month();
+  });
 
   return (
     <div className="ongoing">
@@ -141,7 +149,7 @@ const OnGoing: React.FC = () => {
             >
               <div className="circle-indicator" title={currentTime.format('h:mm A')}></div>
             </div>
-            {tasks.map((task) => {
+            {filteredTasks.map((task) => {
               const taskPosition = getTaskPosition(task.start, task.end);
               return (
                 <div
@@ -150,7 +158,8 @@ const OnGoing: React.FC = () => {
                   style={{ top: `${taskPosition.top}%`, height: `${taskPosition.height}%` }}
                   title={`${task.start} - ${task.end}`}
                 >
-                  {task.title}
+                  <div className="task-title-box">{task.title}</div>
+                  <div className="time-box">{`${moment(task.start,'hh:mm A').format('h:mm A')} - ${moment(task.end,'hh:mm A').format('h:mm A')}`}</div>
                 </div>
               );
             })}
