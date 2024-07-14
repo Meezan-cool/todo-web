@@ -25,8 +25,8 @@ $Poppins : "Poppins", sans-serif;
     .big-card{height:auto; width:100%; padding: 15px 25px;
         display: flex; flex-direction: column; gap: 5px; box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     .card-title{font-size: 18px;}
-    .card-sub-title{font-size: 10px; font-weight: 300;}
-    .character{display: flex; align-items: center; justify-content: space-between;
+    .card-sub-title{font-size: 10px; font-weight: 300; letter-spacing: 1px;}
+    .character{display: flex; align-items: flex-end; justify-content: space-between;
         .char-images{display: flex; margin-top: 10px; 
         .char-image{height: 40px; width: 40px; position: relative;
             img{height: 100%; width: 100%; object-fit: cover; border-radius: 50%;
@@ -34,15 +34,15 @@ $Poppins : "Poppins", sans-serif;
                 &.layered-image{left: -15px;}
         }
         }
-        .more{font-size: 10px;}
+        .more{font-size: 10px; font-weight:600; letter-spacing:1px;}
     }}
 
     .review-part{display: flex; align-items: center; justify-content: space-between;
         color: #fff; padding: 0 10px;
     .review-text{font-size: 20px; font-weight: 400; letter-spacing: 0.5px;}
-    .review-icon{height: 45px; width: 45px; border-radius: 50%; 
+    .review-icon{height: 40px; width: 40px; border-radius: 50%; 
         background-color: #2ccdfe; display: flex; align-items: center; justify-content: center;
-    .bag{font-size: 22px;}}
+    .bag{font-size: 20px;}}
     }
 
     .review-boxes{display: grid; grid-template-columns: repeat(2,1fr);
