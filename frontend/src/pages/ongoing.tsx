@@ -12,6 +12,14 @@ const OnGoing: React.FC = () => {
 
   const datesContainerRef = useRef<HTMLDivElement | null>(null);
   const activeDateRef = useRef<HTMLDivElement | null>(null);
+  const ongoingDateBoxRef = useRef<HTMLDivElement | null>(null);
+
+  // Sample tasks data
+  const tasks = [
+    { id: 1, title: 'Task 1', start: '09:00', end: '11:00' },
+    { id: 2, title: 'Task 2', start: '12:00', end: '13:30' },
+    { id: 3, title: 'Task 3', start: '14:00', end: '15:30' },
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -27,6 +35,17 @@ const OnGoing: React.FC = () => {
     return ((hours * 60 + minutes) * 100) / (24 * 60); // Percentage of the day
   };
 
+  const getTaskPosition = (start: string, end: string) => {
+    const startTime = moment(start, 'HH:mm');
+    const endTime = moment(end, 'HH:mm');
+    const startPosition = getTimePosition(startTime);
+    const endPosition = getTimePosition(endTime);
+    return {
+      top: startPosition,
+      height: endPosition - startPosition,
+    };
+  };
+
   const redLinePosition = getTimePosition(currentTime);
 
   useEffect(() => {
@@ -35,6 +54,15 @@ const OnGoing: React.FC = () => {
       datesContainerRef.current.scrollLeft = itemOffset;
     }
   }, [activeDate]);
+
+  useEffect(() => {
+    if (ongoingDateBoxRef.current) {
+      const containerHeight = ongoingDateBoxRef.current.offsetHeight;
+      const scrollPosition = (redLinePosition / 100) * containerHeight - 100;
+      ongoingDateBoxRef.current.scrollTop = redLinePosition * 13;
+      console.log(scrollPosition > 0 ? scrollPosition * 5 : 0)
+    }
+  }, [currentTime, redLinePosition]);
 
   const prevMonth = () => {
     const newMonth = currentMonth.clone().subtract(1, 'month');
@@ -100,7 +128,7 @@ const OnGoing: React.FC = () => {
 
       <div className="ongoing-box">
         <div className="title-box">Ongoing</div>
-        <div className="ongoing-date-box">
+        <div className="ongoing-date-box" ref={ongoingDateBoxRef}>
           <div className="timeline">
             {hours.map((hour) => (
               <div key={hour} className="timeline-hour">
@@ -110,10 +138,22 @@ const OnGoing: React.FC = () => {
             <div
               className="time-indicator"
               style={{ top: `${redLinePosition}%` }}
-               // Tooltip with the current time
             >
               <div className="circle-indicator" title={currentTime.format('h:mm A')}></div>
             </div>
+            {tasks.map((task) => {
+              const taskPosition = getTaskPosition(task.start, task.end);
+              return (
+                <div
+                  key={task.id}
+                  className="task-card"
+                  style={{ top: `${taskPosition.top}%`, height: `${taskPosition.height}%` }}
+                  title={`${task.start} - ${task.end}`}
+                >
+                  {task.title}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
