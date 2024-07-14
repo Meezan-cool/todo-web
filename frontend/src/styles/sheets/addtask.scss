@@ -1,0 +1,27 @@
+$Poppins : "Poppins", sans-serif;
+.addtask{
+    font-family: $Poppins;
+    min-height: 100vh;
+    width: 100%;
+    padding: 30px 20px;
+
+    .addtask-header{display: flex; justify-content: space-between; align-items: center;
+    .cancel{color: #6664dc; font-weight: 500;letter-spacing: 0.5px; font-size: 14px;}
+    .newtask{font-weight: 600;letter-spacing: 0.5px; font-size: 18px;}
+    .done{color: #6664dc; font-weight: 500;letter-spacing: 0.5px; font-size: 14px;}
+    }
+    .input-part{display: flex; flex-direction: column; gap: 20px; padding-top: 20px;
+    .input-title{display: flex; flex-direction: column; gap:3px;
+    .input-task{font-size: 15px; font-weight: 500; letter-spacing: 0.5px;}
+    > input{height: 45px; width: 100%; padding-left:8px; font-size: larger;
+    border: none; outline: none; background-color: #f1f2f3; border-radius: 8px;
+    text-transform: capitalize;} 
+    }
+    .input-des{ width: 100%;
+    .input-description{font-size: 15px; font-weight: 500; letter-spacing: 0.5px;}
+    > textarea{height:120px; width: 100%; resize: none; background-color: #f1f2f3;
+    border-radius: 12px; padding:12px 8px; font-size: large; border: none; outline: none;
+    &::placeholder{color: black;}}
+    }
+    }
+}

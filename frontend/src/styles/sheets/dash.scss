@@ -1,5 +1,56 @@
+$Poppins : "Poppins", sans-serif;
 .dash{
+    font-family: $Poppins;
     min-height: 100vh;
     width: 100%;
-    background: linear-gradient(to top , #422EAC , #8677fa);
+    padding: 30px 20px;
+    background:linear-gradient(to bottom right, #7b6de5, transparent 40%);
+    background-color: #563dd4;
+    //  linear-gradient(to top , #2f1a9b , #7b6de5);
+    
+    display: flex; flex-direction: column; gap: 20px;
+
+    .dash-header{display: flex; justify-content: space-between;
+    .dash-icon{height: 30px; width: 30px; color: #fff;
+    .bar-icon{height: 100%; width: 100%;}}
+    .dash-profile{height: 40px; width: 40px;
+    > img{height: 100%; width: 100%; object-fit: cover; border-radius: 50%;
+        border: 2px solid white;}}
+    }
+    .dash-user{color: #fff; padding-top: 20px;
+    .user-name{font-size: 25px; font-weight: 600; letter-spacing: 0.5px;}
+    .pending-tasks{font-size: 13px; color:rgb(240, 231, 231);}
+    }
+    .card-prop{background-color: #6664dc; border-radius: 15px; color: #fff;}
+    .big-card{height:auto; width:100%; padding: 15px 25px;
+        display: flex; flex-direction: column; gap: 5px; box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    .card-title{font-size: 18px;}
+    .card-sub-title{font-size: 10px; font-weight: 300; letter-spacing: 1px;}
+    .character{display: flex; align-items: flex-end; justify-content: space-between;
+        .char-images{display: flex; margin-top: 10px; 
+        .char-image{height: 40px; width: 40px; position: relative;
+            img{height: 100%; width: 100%; object-fit: cover; border-radius: 50%;
+                border: 2px solid white;}
+                &.layered-image{left: -15px;}
+        }
+        }
+        .more{font-size: 10px; font-weight:600; letter-spacing:1px;}
+    }}
+
+    .review-part{display: flex; align-items: center; justify-content: space-between;
+        color: #fff; padding: 0 10px;
+    .review-text{font-size: 20px; font-weight: 400; letter-spacing: 0.5px;}
+    .review-icon{height: 40px; width: 40px; border-radius: 50%; 
+        background-color: #2ccdfe; display: flex; align-items: center; justify-content: center;
+    .bag{font-size: 20px;}}
+    }
+
+    .review-boxes{display: grid; grid-template-columns: repeat(2,1fr);
+        gap: 25px; padding: 0 10px; position: relative;
+    .normal-card{height: 120px; width: 100%; display: flex; align-items: center; justify-content: center;flex-direction: column; gap: 5px;}
+    .normal-card2{height: 120px; width: 100%; display: flex; align-items: center; justify-content: center;flex-direction: column; gap: 5px; margin-top:-30px;}
+    .small-card{height: 90px; width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px;}
+    .card-number{font-size: 25px; font-weight: 600;}
+    .card-text{font-size: 12px;}
+    }
 }
