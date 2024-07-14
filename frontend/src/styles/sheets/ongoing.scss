@@ -1,5 +1,198 @@
+$OnGoingFont : "Inter", sans-serif;
+$CurrentMonth : "Poppins", sans-serif;
 .ongoing{
     min-height: 100vh;
     width: 100%;
     background: linear-gradient(to top, #b7daf1 , #d4e5f0 );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 30px 0px 0px 0px;
+    font-family: $OnGoingFont;
+    .month-box{
+        width: 100%;
+        max-width: 450px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        .curr-month{
+            font-size: 25px;
+            letter-spacing: .5px;
+            font-weight: 600;
+            font-family: $CurrentMonth;
+            transition: all 400ms ease;
+            color: #20155b;
+        }
+        .month-btn{
+            position: absolute;
+            transition: all 400ms ease;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            .sl-icon{color: #454444;}
+            &.prev{left: 15px; .sl-icon{rotate: 90deg;}}
+            &.next{right: 15px  ; .sl-icon{rotate: -90deg;}}
+        }
+    }
+    .date-box {
+      max-width: 450px;
+        overflow-x: scroll;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        display: flex;
+        // background-color: salmon;
+        width: 100%;
+    }
+    .date-item {
+        flex: 0 0 25%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        scroll-snap-align: start;
+        &.active .date-show{
+            background-color: #3D29AC;
+            color: white;
+            font-weight: 500;
+            span{font-weight: normal;}
+          }
+        .date-show{
+            background-color: white;
+            // box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+            color: #3D29AC;
+            width: 80%;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 7px; font-size: 20px;
+            align-items: center;
+            border-radius: 35px;
+            transition: all 400ms ease;
+            span{font-size: 12px;letter-spacing: 1px;}
+        }
+    }
+    .ongoing-box{
+      max-width: 450px;
+        flex: 1;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        .title-box{
+            padding: 0 15px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #20155b;
+            font-family: $CurrentMonth;
+        }
+        .ongoing-date-box{
+            position: relative;
+            flex: 1;
+            width: 100%;
+            overflow: scroll;
+            padding: 20px 0;
+            scroll-behavior: smooth;
+        }
+    }
+
 }
+.ongoing-date-box {
+  
+    .timeline {
+      position: absolute;
+      width: 100%;
+      z-index: 1;
+  
+      .timeline-hour {
+        height: 60px; 
+        text-align: left;
+        padding: 0 15px;
+        position: relative;
+        font-size: 13.5px;
+        color: #8794A3;
+        font-weight: 500;
+        span{
+            position: relative;
+            top: -7.5px;
+        }
+      }
+  
+      .time-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        width: calc(100% - 100px);
+        transition: all 400ms ease;
+        height: 1px;
+        right: 10px;
+        background-color: red;
+        z-index: 2;
+        .circle-indicator{
+            position: absolute;
+            left: -10px;
+            width: 13px;height: 13px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            &::before{
+                content: "";
+                position: absolute;
+                height: 5px;
+                width: 5px;
+                border-radius: 50%;
+                background: red;
+            }
+        }
+      }
+    }
+  
+    .time-slot {
+      position: absolute;
+      width: calc(100% - 20px);
+      background-color: #dcd0ff;
+      border: 1px solid #bdb3ff;
+      border-radius: 4px;
+      padding: 10px;
+      z-index: 3;
+  
+      .time-slot-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+  
+      .time-slot-participants {
+        margin-bottom: 5px;
+      }
+  
+      .time-slot-time {
+        font-size: 0.9em;
+        color: #666;
+      }
+    }
+  }
+  
+
+  .task-card {
+    position: absolute;
+    right: 15px;
+    width: calc(100% - 115px);
+    background-color: rgba(0, 123, 255, 0.5);
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    color: #fff;
+    padding: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  
