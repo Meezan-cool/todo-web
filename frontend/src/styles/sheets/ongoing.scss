@@ -1,15 +1,17 @@
 $OnGoingFont : "Inter", sans-serif;
 $CurrentMonth : "Poppins", sans-serif;
 .ongoing{
-    min-height: 100vh;
+    height: 100vh;
     width: 100%;
+    overflow: hidden;
     background: linear-gradient(to top, #b7daf1 , #d4e5f0 );
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    padding: 30px 0px 0px 0px;
+    padding: 30px 0px 15px 0px;
     font-family: $OnGoingFont;
+    position: relative;
     .month-box{
         width: 100%;
         max-width: 450px;
@@ -83,21 +85,38 @@ $CurrentMonth : "Poppins", sans-serif;
         width: 100%;
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 10px;
         .title-box{
             padding: 0 15px;
             font-size: 22px;
             font-weight: 600;
+            align-self: flex-start;
             color: #20155b;
             font-family: $CurrentMonth;
         }
         .ongoing-date-box{
             position: relative;
             flex: 1;
-            width: 100%;
+            width: calc(100% - 20px);
             overflow: scroll ;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px 0 ;
             scroll-behavior: smooth;
+            position: relative;
+            z-index: 2;
+            background-color: white;
+            border-radius: 25px;
+            // &::before{
+            //   content: "";
+            //   position: fixed;
+            //   z-index: -1;
+            //   width: calc(100% - 20px);
+            //   height: calc(100% - 20px);
+            //   background-color: white;
+            // }
         }
     }
 
@@ -134,13 +153,13 @@ $CurrentMonth : "Poppins", sans-serif;
         height: 1px;
         right: 10px;
         background-color: red;
-        z-index: 2;
+        z-index: 100;
         .circle-indicator{
             position: absolute;
             left: -10px;
             width: 13px;height: 13px;
             border-radius: 50%;
-            background: white;
+            background: aliceblue;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -186,15 +205,125 @@ $CurrentMonth : "Poppins", sans-serif;
     position: absolute;
     right: 20px;
     width: calc(100% - 120px);
-    // background-color: rgba(0, 123, 255, 0.5);
-    // border: 1px solid #007bff;
     background-color: #514DD0;
     border-radius: 12px;
     color: #fff;
     padding: 10px;
     box-sizing: border-box;
     overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
+    z-index: 10;
+    &.split-first{border-radius: 20px 20px 0 0;}
+    &.split-last{border-radius: 0 0 20px 20px;
+      &::after{
+        content: "";position: absolute;height: 20px;
+        width: 100%;
+        top: -20px;
+        background-color: #514DD0;
+      }
+    }
+  }
+  
+
+  .popup {
+    position: absolute;
+    height: calc(100vh - 200px);
+    max-height: calc(100vh - 75px);
+    width: 100%;
+    max-width: 450px;
+    bottom: -100%;
+    background: white;
+    padding: 20px 20px 0 20px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 25px;
+    z-index: 1000;
+    transition: all 450ms ease;
+    &.show{
+      bottom: 0;
+    }
+    .popup-dragger{
+      width: 120px;
+      height: 4.5px;
+      border-radius: 35px;
+      background-color: #b7daf1;
+    }
+    .popup-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      .fe-box{font-size: 15.5px;color: #514DD0; font-weight: 500;}
+      .main-box{font-weight:500;}
+    }
+    .task-form-box{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 20px;
+      .input-box{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        .label-box{font-size: 13.5px; font-weight: 500;}
+        input,textarea{
+          border: none;outline: none;
+          background-color: #f1f3f2;
+          resize: none;
+          height: 50px;
+          width: 100%; font-size: 15px;
+          padding: 0 15px;
+          border-radius: 10px;
+          font-family: $CurrentMonth;
+          &::placeholder{color: black;}
+          &::selection{
+            background-color: #514DD0;
+            color: white;
+          }
+        }
+        textarea{height: 130px;padding: 10px 15px 0 15px;}
+      }
+    }
+  }
+  
+  .popup-content {
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .popup button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  
+  .popup button:hover {
+    background: #0056b3;
+  }
+  
+  .toast {
+    position: fixed;
+    top: -100px;
+    width: calc(100% - 30px);
+    height: 50px;
+    background-color: #57B45B;
+    color: #fff;
+    border-radius: 10px;
+    z-index: 1000;
+    transition: all 400ms ease;
+    display: grid;
+    place-items: center;
+    &.showtoast{
+      top: 20px;
+    }
   }
   
