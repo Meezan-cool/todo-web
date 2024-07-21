@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import moment, { Moment } from 'moment';
 import '../styles/sheets/ongoing.scss';
 import MonthNavigation from '../components/MonthNav';
-
+import {Icon} from '@iconify/react'
 interface Task {
   id: number | string;
   title: string;
@@ -24,12 +24,42 @@ const OnGoing: React.FC = () => {
   const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
   const [popupContent, setPopupContent] = useState<string>('');
   const [toastMessage, setToastMessage] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<Moment>(today);
+  const [estimatedTime, setEstimatedTime] = useState<number>(3);
+  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState<boolean>(false);
+  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState<boolean>(false);
+  const [priority, setPriority] = useState({ name: 'low'});
+  
+  const handleTabChange = (tab) => {
+    let backColor;
+    switch (tab) {
+      case 'low':
+        backColor = '#e0f7fa';
+        break;
+      case 'medium':
+        backColor = '#fff3e0';
+        break;
+      case 'high':
+        backColor = '#ffebee';
+        break;
+      default:
+        backColor = '#fff';
+    }
+    setPriority((prevState) => ({
+      ...prevState,
+      name: tab,
+      backColor
+    }));
+  };
+
 
   // Sample tasks data
   const tasks: Task[] = [
     { id: 1, title: 'Add Smooth Dragging Functionality in Popup', start: '05:00', end: '07:00', date: '17 July' },
     { id: 2, title: 'Dragging Functionality', start: '15:00', end: '20:10', date: '19 July' },
     { id: 3, title: 'Testing Of Master Todo', start: '1:00', end: '3:10', date: '20 July' },
+    { id: 4, title: 'Todo', start: '1:00', end: '3:00', date: '21 July' },
+    { id: 5, title: 'Appointment Updates', start: '2:00', end: '5:00', date: '22 July' },
   ];
 
   useEffect(() => {
@@ -168,27 +198,32 @@ const OnGoing: React.FC = () => {
       .month(currentMonth.month())
       .hour(hour)
       .minute(0);
-  
+
     const currentDateNow = moment().date(); 
     const formatHour = moment().hour(hour).minute(0).second(0);
     const currentTimeMinute = moment().format('HH:mm:ss');
-  
+
     const getFormattedTime = (time: moment.Moment, minutesToAdd: number): string => {
       return time.clone().add(minutesToAdd, 'minutes').format('h:mm A');
     };
-  
+
     if (currentTime.hour() === hour) {
       const taskEndsAtCurrentHour = filteredTasks.some(task => {
         const endHour = moment(task.end, 'HH:mm').hour();
         return endHour === hour;
       });
-  
+
       let startTime: string;
-      if (taskEndsAtCurrentHour) {
+      if(checkTaskExists(hour)){
+        setToastMessage('A task is already pending in this time slot.');
+        setTimeout(() => setToastMessage(''), 3000);
+        return
+      }
+     else if (taskEndsAtCurrentHour) {
         const additionalMinutes = filteredTasks
           .filter(task => moment(task.end, 'HH:mm').hour() === hour)
           .reduce((total, task) => total + moment(task.end, 'HH:mm').minute(), 0);
-  
+
         startTime = getFormattedTime(currentTime, additionalMinutes + 15);
       } else if (activeDate === currentDateNow) {
         startTime = getFormattedTime(formatHour, moment(currentTimeMinute, 'HH:mm:ss').minutes() + 15);
@@ -199,31 +234,41 @@ const OnGoing: React.FC = () => {
       } else {
         startTime = formatHour.format('h:mm A');
       }
-  
+
       setPopupContent(startTime);
       setIsPopupVisible(true);
       return; // Return early to prevent further actions
     }
-  
+
     // Check if clickedDateTime is in the past or before today
     if (clickedDateTime.isBefore(currentTime) || clickedDateTime.isBefore(today, 'day')) {
       setToastMessage('Cannot schedule tasks in the past.');
       setTimeout(() => setToastMessage(''), 3000);
       return;
     }
-  
+
     // Check if a task already exists in the time slot
     if (checkTaskExists(hour)) {
       setToastMessage('A task is already pending in this time slot.');
       setTimeout(() => setToastMessage(''), 3000);
       return;
     }
-  
+
     // If none of the above conditions matched, simply set the start time
     const startTime = formatHour.format('h:mm A');
     setPopupContent(startTime);
     setIsPopupVisible(true);
   };
+
+  const generateUpcomingDates = () => {
+    const dates = [];
+    for (let i = 0; i < 30; i++) {
+      dates.push(today.clone().add(i, 'days'));
+    }
+    return dates;
+  };
+
+  const dateOptions = generateUpcomingDates();
 
   return (
     <div className="ongoing">
@@ -294,12 +339,82 @@ const OnGoing: React.FC = () => {
           </div>
           <div className="input-box">
             <div className="label-box">Description</div>
-            <textarea  placeholder='Enter Task Title'/>
+            <textarea placeholder='Enter Task Description'/>
           </div>
-        </div>
-          {popupContent}{activeDate}
+
+          <div className="db-input-box">
+            <div className="input-box">
+              <div className="label-box">Date</div>
+              <div className="custom-dropdown">
+                <div className={`selected-option ${isDateDropdownOpen?'bora':''}`} onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}>
+                  {selectedDate.format('D MMM')}  <Icon icon="uim:calender" className='icon-opt'/>
+                </div>
+                  <div className={`dropdown-options ${isDateDropdownOpen?'enlarge':''}`}>
+                    {dateOptions.map((date, index) => (
+                      <div
+                        key={index}
+                        className={`dropdown-option ${selectedDate.isSame(date, 'day') ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedDate(date);
+                          setIsDateDropdownOpen(false);
+                        }}
+                      >
+                        {date.format('D MMM')}
+                       
+                      </div>
+                    ))}
+                  </div>
+              </div>
+            </div>
+            <div className="input-box">
+              <div className="label-box">Estimated Time</div>
+              <div className="custom-dropdown">
+                <div className={`selected-option ${isTimeDropdownOpen?'bora':''}`} onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}>
+                  {estimatedTime}h  <Icon icon="uim:clock" className='icon-opt'/>
+                </div>
+                {/* {isTimeDropdownOpen && ( */}
+                 <div className={`dropdown-options ${isTimeDropdownOpen?'enlarge':''}`}>
+                    {Array.from({ length: 6 }, (_, i) => i + 2).map((hours) => (
+                      <div
+                        key={hours}
+                        className={`dropdown-option ${estimatedTime === hours ? 'active' : ''}`}
+                        onClick={() => {
+                          setEstimatedTime(hours);
+                          setIsTimeDropdownOpen(false);
+                        }}
+                      >
+                        {hours} hours
+                      </div>
+                    ))}
+                  </div>
+                {/* // )} */}
+              </div>
+            </div>
+          </div>
+          
+          <div className="input-box">
+          <div className="label-box">Priority</div>
+          <div className="tab-container">
+          {['low', 'medium', 'high'].map((tab) => (
+          <div
+            key={tab}
+            className={`tab ${priority.name === tab ? 'active' : ''} `}
+            onClick={() => handleTabChange(tab)}
+            // style={priority.name === tab ? { background: priority.backColor } : {}}
+          >
+            <div  className={`priority-decor-tab ${priority.name === tab ? 'active' : ''} ${priority.name === 'low' ? 'low' : ''} ${priority.name === 'medium' ? 'medium' : ''} ${priority.name === 'high' ? 'high' : ''}`}
+            ></div>
+            {tab}
+          </div>
+        ))}
+
       </div>
-      <div className={`toast ${toastMessage?'showtoast':''}`}>{toastMessage}</div>
+      </div>
+
+        </div>
+        {/* {popupContent}   */}
+      </div>
+      <div className={`toast ${toastMessage ? 'showtoast' : ''}`}>{toastMessage}</div>
     </div>
   );
 };
