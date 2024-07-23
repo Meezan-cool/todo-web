@@ -232,9 +232,9 @@ $CurrentMonth : "Poppins", sans-serif;
     width: 100%;
     max-width: 450px;
     bottom: -100%;
-    // background: #0002;
-    background: #fff;
-    // backdrop-filter: blur(15px);
+    // background: #fff;
+    background: #0002;
+    backdrop-filter: blur(10px);
     padding: 20px 20px 60px 20px;
     border-radius: 20px 20px 0 0;
     display: flex;
@@ -258,7 +258,7 @@ $CurrentMonth : "Poppins", sans-serif;
       justify-content: space-between;
       width: 100%;
       .fe-box{font-size: 15.5px;color: #514DD0; font-weight: 500;}
-      .main-box{font-weight:500;}
+      .main-box{font-weight:600;color: #0009;}
     }
     .task-form-box{
       display: flex;
@@ -273,7 +273,7 @@ $CurrentMonth : "Poppins", sans-serif;
         .label-box{font-size: 13.5px; font-weight: 500;}
         input,textarea,.selected-option{
           border: none;outline: none;
-          background-color: rgba(241, 243, 242,.70);
+          background-color: rgb(241, 243, 242);
           resize: none;
           height: 50px;
           width: 100%; font-size: 15px;
@@ -305,34 +305,43 @@ $CurrentMonth : "Poppins", sans-serif;
       justify-content: space-between;
       transition: all 400ms ease;
       border-radius: 10px;
-      &.bora{border-radius: 10px 10px 0 0 !important;}
+      border: 2px solid #827ecf !important;
+      border-color: transparent !important;
+      border-top: none  !important;
+      &.bora{border-radius: 0 0 10px 10px !important;
+        border-color: #827ecf  !important;
+        }
       .icon-opt{
         font-size: 24px;
         color: #827ecf;
       }
     }
     .dropdown-options{
-      top: 100%;
+      bottom: 100%;
       position: absolute;
       display: flex;
       align-items: center;
       justify-content: flex-start;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
       pointer-events: none;
       scroll-snap-type: y mandatory;
       max-height: 0px;
       transition: all 400ms ease;
       width: 100%;
+      margin-top: 5px !important;
       padding: 3px 0;
       background-color: #f1f3f2; 
+      border: 2px solid #827ecf;
+      border-bottom: none;
       font-size: 15px;
-      border-radius: 0 0 10px 10px;
+      border-radius: 10px 10px 0px 0px;
       overflow: scroll;
       opacity: 0;
+      
       &.enlarge{
         pointer-events: auto;
-        max-height: 128px;
+        max-height: 135px;
         opacity: 1;
       }
       .dropdown-option {
@@ -340,10 +349,16 @@ $CurrentMonth : "Poppins", sans-serif;
         min-height: 40px;
         border-radius: 8px;
         padding: 0 7px;
+        // margin: 2px 0;
         display: flex;
         font-size: 12px;
         align-items: center;
         width: calc(100% - 15px);
+        &.gapped-top{
+          min-height: 3px !important;
+          width: 100%;
+          pointer-events: none;
+        }
         // &.active{background-color: white;}
         &.active{background-color: #c5c3f2;}
       }
@@ -362,11 +377,10 @@ $CurrentMonth : "Poppins", sans-serif;
     .tab{
       flex: 1;
       display: grid;
-      // border-radius: 8px;
+      font-size: 15px;
       place-items: center;
       height: calc(100% - 15px);
       text-transform: capitalize;
-      // z-index: 1;
       .priority-decor-tab{
         position: absolute;
                  height: calc(100% - 15px);

@@ -30,28 +30,78 @@ const OnGoing: React.FC = () => {
   const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState<boolean>(false);
   const [priority, setPriority] = useState({ name: 'low'});
   
-  const handleTabChange = (tab) => {
-    let backColor;
+  const calculateSizeInMB = (data: string): number => {
+    // Convert to JSON string if not already
+    const jsonString = JSON.stringify(data);
+    // Calculate byte length
+    const byteLength = new Blob([jsonString]).size;
+    // Convert bytes to MB
+    return byteLength / (1024 * 1024);
+  };
+
+  const storeDataInLocalStorage = (key: string, data: string) => {
+    const maxStorageMB = 4; // Maximum allowed storage in MB
+    const maxStorageBytes = maxStorageMB * 1024 * 1024; // Convert MB to bytes
+  
+    // Calculate size of data to store
+    const dataSize = calculateSizeInMB(data);
+  
+    if (dataSize > maxStorageMB) {
+      console.warn('Data size exceeds the limit of 4MB.');
+      return;
+    }
+  
+    try {
+      localStorage.setItem(key, data);
+      console.log('Data stored successfully.');
+      // Check remaining space
+      checkRemainingLocalStorageSpace();
+    } catch (error) {
+      console.error('Error storing data:', error);
+    }
+  };
+  
+  const checkRemainingLocalStorageSpace = () => {
+    const totalBytes = localStorage.length;
+    const freeBytes = (5 * 1024 * 1024) - totalBytes; // Assuming 5MB total storage
+    console.log(`Remaining local storage space: ${(freeBytes / (1024 * 1024)).toFixed(2)} MB`);
+  };
+  
+  
+
+  const handleTabChange = (tab:string) => {
     switch (tab) {
       case 'low':
-        backColor = '#e0f7fa';
         break;
       case 'medium':
-        backColor = '#fff3e0';
         break;
       case 'high':
-        backColor = '#ffebee';
         break;
       default:
-        backColor = '#fff';
     }
     setPriority((prevState) => ({
       ...prevState,
       name: tab,
-      backColor
     }));
   };
+  const dateDropdownRef = useRef<HTMLDivElement>(null);
+  const timeDropdownRef = useRef<HTMLDivElement>(null);
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dateDropdownRef.current && !dateDropdownRef.current.contains(event.target as Node)) {
+      setIsDateDropdownOpen(false);
+    }
+    if (timeDropdownRef.current && !timeDropdownRef.current.contains(event.target as Node)) {
+      setIsTimeDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Sample tasks data
   const tasks: Task[] = [
@@ -172,7 +222,7 @@ const OnGoing: React.FC = () => {
       setActiveDate(date.date()); // Set active date only if the date is within the current month
     }
   };
-
+  console.log(popupContent)
   const datesOfMonth = getDatesOfMonth(currentMonth);
 
   const hours = Array.from({ length: 24 }, (_, i) => i); // Create an array of hours from 0 to 23
@@ -191,74 +241,85 @@ const OnGoing: React.FC = () => {
     });
   };
 
-  const handleTimelineClick = (hour: number): void => {
-    const currentTime = moment();
-    const clickedDateTime = moment()
-      .date(activeDate as number)
-      .month(currentMonth.month())
-      .hour(hour)
-      .minute(0);
 
-    const currentDateNow = moment().date(); 
-    const formatHour = moment().hour(hour).minute(0).second(0);
-    const currentTimeMinute = moment().format('HH:mm:ss');
+const handleTimelineClick = (hour: number): void => {
+  const currentTime = moment();
+  const clickedDateTime = moment()
+    .date(activeDate as number)
+    .month(currentMonth.month())
+    .hour(hour)
+    .minute(0);
 
-    const getFormattedTime = (time: moment.Moment, minutesToAdd: number): string => {
-      return time.clone().add(minutesToAdd, 'minutes').format('h:mm A');
-    };
+  const currentDateNow = moment().date();
+  const formatHour = moment().hour(hour).minute(0).second(0);
+  const currentTimeMinute = moment().format('HH:mm:ss');
 
-    if (currentTime.hour() === hour) {
-      const taskEndsAtCurrentHour = filteredTasks.some(task => {
-        const endHour = moment(task.end, 'HH:mm').hour();
-        return endHour === hour;
-      });
+  const getFormattedTime = (time: moment.Moment, minutesToAdd: number): string => {
+    return time.clone().add(minutesToAdd, 'minutes').format('h:mm A');
+  };
 
-      let startTime: string;
-      if(checkTaskExists(hour)){
-        setToastMessage('A task is already pending in this time slot.');
-        setTimeout(() => setToastMessage(''), 3000);
-        return
-      }
-     else if (taskEndsAtCurrentHour) {
-        const additionalMinutes = filteredTasks
-          .filter(task => moment(task.end, 'HH:mm').hour() === hour)
-          .reduce((total, task) => total + moment(task.end, 'HH:mm').minute(), 0);
+  if (currentTime.hour() === hour) {
+    const taskEndsAtCurrentHour = filteredTasks.some(task => {
+      const endHour = moment(task.end, 'HH:mm').hour();
+      return endHour === hour;
+    });
 
-        startTime = getFormattedTime(currentTime, additionalMinutes + 15);
-      } else if (activeDate === currentDateNow) {
-        startTime = getFormattedTime(formatHour, moment(currentTimeMinute, 'HH:mm:ss').minutes() + 15);
-      } else if (activeDate < currentDateNow) {
-        setToastMessage('Cannot schedule tasks in the past.');
-        setTimeout(() => setToastMessage(''), 3000);
-        return;
-      } else {
-        startTime = formatHour.format('h:mm A');
-      }
-
-      setPopupContent(startTime);
-      setIsPopupVisible(true);
-      return; // Return early to prevent further actions
-    }
-
-    // Check if clickedDateTime is in the past or before today
-    if (clickedDateTime.isBefore(currentTime) || clickedDateTime.isBefore(today, 'day')) {
-      setToastMessage('Cannot schedule tasks in the past.');
-      setTimeout(() => setToastMessage(''), 3000);
-      return;
-    }
-
-    // Check if a task already exists in the time slot
+    let startTime: string;
     if (checkTaskExists(hour)) {
-      setToastMessage('A task is already pending in this time slot.');
-      setTimeout(() => setToastMessage(''), 3000);
+      displayToastMessage('A task is already pending in this time slot.');
       return;
+    } else if (taskEndsAtCurrentHour) {
+      const additionalMinutes = filteredTasks
+        .filter(task => moment(task.end, 'HH:mm').hour() === hour)
+        .reduce((total, task) => total + moment(task.end, 'HH:mm').minute(), 0);
+
+      startTime = getFormattedTime(currentTime, additionalMinutes + 15);
+    } else if (activeDate === currentDateNow) {
+      startTime = getFormattedTime(formatHour, moment(currentTimeMinute, 'HH:mm:ss').minutes() + 15);
+    } else if (activeDate !== null && activeDate < currentDateNow) {
+      displayToastMessage('Cannot schedule tasks in the past.');
+      return;
+    } else {
+      startTime = formatHour.format('h:mm A');
     }
 
-    // If none of the above conditions matched, simply set the start time
-    const startTime = formatHour.format('h:mm A');
     setPopupContent(startTime);
     setIsPopupVisible(true);
-  };
+    return; // Return early to prevent further actions
+  }
+
+  // Check if clickedDateTime is in the past or before today
+  if (clickedDateTime.isBefore(currentTime) || clickedDateTime.isBefore(moment(), 'day')) {
+    displayToastMessage('Cannot schedule tasks in the past.');
+    return;
+  }
+
+  // Check if a task already exists in the time slot
+  if (checkTaskExists(hour)) {
+    displayToastMessage('A task is already pending in this time slot.');
+    return;
+  }
+
+  // If none of the above conditions matched, simply set the start time
+  const startTime = formatHour.format('h:mm A');
+  setPopupContent(startTime);
+  setIsPopupVisible(true);
+
+   // Store data when setting popup content
+   storeDataInLocalStorage('popupContent', startTime);
+};
+
+useEffect(() => {
+  checkRemainingLocalStorageSpace();
+}, []);
+
+
+// Function to display the toast message
+function displayToastMessage(message: string): void {
+  setToastMessage(message);
+  setTimeout(() => setToastMessage(''), 3000);
+}
+
 
   const generateUpcomingDates = () => {
     const dates = [];
@@ -330,7 +391,7 @@ const OnGoing: React.FC = () => {
         <div className="popup-header">
           <div className="fe-box" onClick={() => setIsPopupVisible(false)}>Cancel</div>
           <div className="main-box">New Task</div>
-          <div className="fe-box">Done</div>
+          <div className="fe-box" >Done</div>
         </div>
         <div className="task-form-box">
           <div className="input-box">
@@ -345,11 +406,12 @@ const OnGoing: React.FC = () => {
           <div className="db-input-box">
             <div className="input-box">
               <div className="label-box">Date</div>
-              <div className="custom-dropdown">
+              <div className="custom-dropdown" ref={dateDropdownRef}>
                 <div className={`selected-option ${isDateDropdownOpen?'bora':''}`} onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}>
                   {selectedDate.format('D MMM')}  <Icon icon="uim:calender" className='icon-opt'/>
                 </div>
                   <div className={`dropdown-options ${isDateDropdownOpen?'enlarge':''}`}>
+                    <div className="dropdown-option gapped-top"></div>
                     {dateOptions.map((date, index) => (
                       <div
                         key={index}
@@ -360,7 +422,6 @@ const OnGoing: React.FC = () => {
                         }}
                       >
                         {date.format('D MMM')}
-                       
                       </div>
                     ))}
                   </div>
@@ -368,12 +429,13 @@ const OnGoing: React.FC = () => {
             </div>
             <div className="input-box">
               <div className="label-box">Estimated Time</div>
-              <div className="custom-dropdown">
+              <div className="custom-dropdown" ref={timeDropdownRef}>
                 <div className={`selected-option ${isTimeDropdownOpen?'bora':''}`} onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}>
                   {estimatedTime}h  <Icon icon="uim:clock" className='icon-opt'/>
                 </div>
                 {/* {isTimeDropdownOpen && ( */}
                  <div className={`dropdown-options ${isTimeDropdownOpen?'enlarge':''}`}>
+                 <div className="dropdown-option gapped-top"></div>
                     {Array.from({ length: 6 }, (_, i) => i + 2).map((hours) => (
                       <div
                         key={hours}
@@ -387,7 +449,6 @@ const OnGoing: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                {/* // )} */}
               </div>
             </div>
           </div>
