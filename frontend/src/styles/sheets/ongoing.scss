@@ -1,15 +1,17 @@
 $OnGoingFont : "Inter", sans-serif;
 $CurrentMonth : "Poppins", sans-serif;
 .ongoing{
-    min-height: 100vh;
+    height: 100vh;
     width: 100%;
+    overflow: hidden;
     background: linear-gradient(to top, #b7daf1 , #d4e5f0 );
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    padding: 30px 0px 0px 0px;
+    padding: 30px 0px 15px 0px;
     font-family: $OnGoingFont;
+    position: relative;
     .month-box{
         width: 100%;
         max-width: 450px;
@@ -83,21 +85,38 @@ $CurrentMonth : "Poppins", sans-serif;
         width: 100%;
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 10px;
         .title-box{
             padding: 0 15px;
             font-size: 22px;
             font-weight: 600;
+            align-self: flex-start;
             color: #20155b;
             font-family: $CurrentMonth;
         }
         .ongoing-date-box{
             position: relative;
             flex: 1;
-            width: 100%;
+            width: calc(100% - 20px);
             overflow: scroll ;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px 0 ;
             scroll-behavior: smooth;
+            position: relative;
+            z-index: 2;
+            background-color: white;
+            border-radius: 25px;
+            // &::before{
+            //   content: "";
+            //   position: fixed;
+            //   z-index: -1;
+            //   width: calc(100% - 20px);
+            //   height: calc(100% - 20px);
+            //   background-color: white;
+            // }
         }
     }
 
@@ -134,13 +153,13 @@ $CurrentMonth : "Poppins", sans-serif;
         height: 1px;
         right: 10px;
         background-color: red;
-        z-index: 2;
+        z-index: 100;
         .circle-indicator{
             position: absolute;
             left: -10px;
             width: 13px;height: 13px;
             border-radius: 50%;
-            background: white;
+            background: aliceblue;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -186,15 +205,269 @@ $CurrentMonth : "Poppins", sans-serif;
     position: absolute;
     right: 20px;
     width: calc(100% - 120px);
-    // background-color: rgba(0, 123, 255, 0.5);
-    // border: 1px solid #007bff;
     background-color: #514DD0;
     border-radius: 12px;
     color: #fff;
     padding: 10px;
     box-sizing: border-box;
     overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
+    z-index: 10;
+    &.split-first{border-radius: 20px 20px 0 0;}
+    &.split-last{border-radius: 0 0 20px 20px;
+      &::after{
+        content: "";position: absolute;height: 20px;
+        width: 100%;
+        top: -20px;
+        background-color: #514DD0;
+      }
+    }
+  }
+  
+
+  .popup {
+    position: absolute;
+    min-height: calc(100vh - 250px);
+    max-height: calc(100vh - 80px);
+    width: 100%;
+    max-width: 450px;
+    bottom: -100%;
+    // background: #fff;
+    background: #0002;
+    backdrop-filter: blur(10px);
+    padding: 20px 20px 60px 20px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 25px;
+    z-index: 1000;
+    transition: all 450ms ease;
+    &.show{
+      bottom: 0;
+    }
+    .popup-dragger{
+      width: 120px;
+      height: 4.5px;
+      border-radius: 35px;
+      background-color: #b7daf1;
+    }
+    .popup-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      .fe-box{font-size: 15.5px;color: #514DD0; font-weight: 500;}
+      .main-box{font-weight:600;color: #0009;}
+    }
+    .task-form-box{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 20px;
+      .input-box{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        .label-box{font-size: 13.5px; font-weight: 500;}
+        input,textarea,.selected-option{
+          border: none;outline: none;
+          background-color: rgb(241, 243, 242);
+          resize: none;
+          height: 50px;
+          width: 100%; font-size: 15px;
+          padding: 0 15px;
+          border-radius: 10px;
+          font-family: $CurrentMonth;
+          &::placeholder{color: black;}
+          &::selection{
+            background-color: #514DD0;
+            color: white;
+          }
+        }
+        textarea{height: 130px;padding: 10px 15px 0 15px;}
+      }
+    }
+  }
+  .db-input-box{
+    display: flex;
+    gap: 20px;
+    
+    .custom-dropdown{
+      height: auto;
+      position: relative;
+      z-index: 10;
+    }
+    .selected-option{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 400ms ease;
+      border-radius: 10px;
+      border: 2px solid #827ecf !important;
+      border-color: transparent !important;
+      border-top: none  !important;
+      &.bora{border-radius: 0 0 10px 10px !important;
+        border-color: #827ecf  !important;
+        }
+      .icon-opt{
+        font-size: 24px;
+        color: #827ecf;
+      }
+    }
+    .dropdown-options{
+      bottom: 100%;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: column;
+      gap: 3px;
+      pointer-events: none;
+      scroll-snap-type: y mandatory;
+      max-height: 0px;
+      transition: all 400ms ease;
+      width: 100%;
+      margin-top: 5px !important;
+      padding: 3px 0;
+      background-color: #f1f3f2; 
+      border: 2px solid #827ecf;
+      border-bottom: none;
+      font-size: 15px;
+      border-radius: 10px 10px 0px 0px;
+      overflow: scroll;
+      opacity: 0;
+      
+      &.enlarge{
+        pointer-events: auto;
+        max-height: 135px;
+        opacity: 1;
+      }
+      .dropdown-option {
+        scroll-snap-align: start;
+        min-height: 40px;
+        border-radius: 8px;
+        padding: 0 7px;
+        // margin: 2px 0;
+        display: flex;
+        font-size: 12px;
+        align-items: center;
+        width: calc(100% - 15px);
+        &.gapped-top{
+          min-height: 3px !important;
+          width: 100%;
+          pointer-events: none;
+        }
+        // &.active{background-color: white;}
+        &.active{background-color: #c5c3f2;}
+      }
+    }
+  }
+  .tab-container{
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    background-color: #f1f3f2;
+    padding: 0 7.5px;
+    position: relative;
+    z-index: 1;
+    .tab{
+      flex: 1;
+      display: grid;
+      font-size: 15px;
+      place-items: center;
+      height: calc(100% - 15px);
+      text-transform: capitalize;
+      .priority-decor-tab{
+        position: absolute;
+                 height: calc(100% - 15px);
+          width: 33%;
+          border-radius: 8px;
+        z-index: -1;
+        left: 7.5px;
+        right: auto;
+        transition: all 400ms ease;
+        &.low{
+          left: 7.5px;
+          background-color: #b4b3ed;
+        }
+        &.medium{
+          left: calc(33% );
+          background-color: #f8d589;
+        }
+        &.high{
+          left: calc(33% * 2 - 3px );
+          background-color: #f97a91;
+        }
+      }
+      &.active{
+        // &::before{
+        //   content: "";
+        //   position: absolute;
+        //   z-index: -1;
+        //   height: calc(100% - 15px);
+        //   width: 33%;
+        //   border-radius: 8px;
+        //   background-color: none;
+        // }
+        // &.low{
+        //   &::before{
+        //     left: 7.5px;
+        //     background-color: #68e2f3;
+        //   }}
+        // &.medium{
+        //   &::before{
+        //     left: calc(33% + 7.5px);
+        //     background-color: #68e2f3;
+        //   }
+        // }
+        // &.high{
+        //   &::before{
+        //     left: calc(33% * 2 - 7.5px);
+        //     background-color: #68e2f3;
+        //   }
+        // }
+      }
+    }
+  }
+  .popup-content {
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .popup button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  
+  .popup button:hover {
+    background: #0056b3;
+  }
+  
+  .toast {
+    position: fixed;
+    top: -100px;
+    width: calc(100% - 30px);
+    height: 50px;
+    background-color: #57B45B;
+    color: #fff;
+    border-radius: 10px;
+    z-index: 1000;
+    transition: all 400ms ease;
+    display: grid;
+    place-items: center;
+    &.showtoast{
+      top: 20px;
+    }
   }
   
