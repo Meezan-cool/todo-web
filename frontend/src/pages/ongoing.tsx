@@ -3,9 +3,12 @@ import moment, { Moment } from 'moment';
 import '../styles/sheets/ongoing.scss';
 import MonthNavigation from '../components/MonthNav';
 import {Icon} from '@iconify/react'
+type Priority = 'low' | 'medium' | 'high';
 interface Task {
   id: number | string;
   title: string;
+  description: string;
+  priority: string;
   start: string;
   end: string;
   date: string;
@@ -21,14 +24,34 @@ const OnGoing: React.FC = () => {
   const datesContainerRef = useRef<HTMLDivElement | null>(null);
   const activeDateRef = useRef<HTMLDivElement | null>(null);
   const ongoingDateBoxRef = useRef<HTMLDivElement | null>(null);
-  const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
-  const [popupContent, setPopupContent] = useState<string>('');
-  const [toastMessage, setToastMessage] = useState<string>('');
-  const [selectedDate, setSelectedDate] = useState<Moment>(today);
-  const [estimatedTime, setEstimatedTime] = useState<number>(3);
-  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState<boolean>(false);
-  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState<boolean>(false);
-  const [priority, setPriority] = useState({ name: 'low'});
+  // const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
+  // const [popupContent, setPopupContent] = useState<string>('');
+  // const [toastMessage, setToastMessage] = useState<string>('');
+  // const [selectedDate, setSelectedDate] = useState<Moment>(today);
+  // const [estimatedTime, setEstimatedTime] = useState<number>(3);
+  // const [isDateDropdownOpen, setIsDateDropdownOpen] = useState<boolean>(false);
+  // const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState<boolean>(false);
+  // const [priority, setPriority] = useState({ name: 'low'});
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState('');
+  const [toastMessage, setToastMessage] = useState('');
+  const [selectedDate, setSelectedDate] = useState(moment());
+  const [estimatedTime, setEstimatedTime] = useState(3);
+  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
+  const [priority, setPriority] = useState<Priority>('low');
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskDescription, setNewTaskDescription] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]);
+  // const dateDropdownRef = useRef<HTMLDivElement>(null);
+  // const timeDropdownRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
+    }
+  }, []);
   
   const calculateSizeInMB = (data: string): number => {
     // Convert to JSON string if not already
@@ -41,7 +64,7 @@ const OnGoing: React.FC = () => {
 
   const storeDataInLocalStorage = (key: string, data: string) => {
     const maxStorageMB = 4; // Maximum allowed storage in MB
-    const maxStorageBytes = maxStorageMB * 1024 * 1024; // Convert MB to bytes
+    // const maxStorageBytes = maxStorageMB * 1024 * 1024; // Convert MB to bytes
   
     // Calculate size of data to store
     const dataSize = calculateSizeInMB(data);
@@ -62,27 +85,15 @@ const OnGoing: React.FC = () => {
   };
   
   const checkRemainingLocalStorageSpace = () => {
-    const totalBytes = localStorage.length;
-    const freeBytes = (5 * 1024 * 1024) - totalBytes; // Assuming 5MB total storage
-    console.log(`Remaining local storage space: ${(freeBytes / (1024 * 1024)).toFixed(2)} MB`);
+    // const totalBytes = localStorage.length;
+    // const freeBytes = (5 * 1024 * 1024) - totalBytes; // Assuming 5MB total storage
+    // console.log(`Remaining local storage space: ${(freeBytes / (1024 * 1024)).toFixed(2)} MB`);
   };
   
   
 
-  const handleTabChange = (tab:string) => {
-    switch (tab) {
-      case 'low':
-        break;
-      case 'medium':
-        break;
-      case 'high':
-        break;
-      default:
-    }
-    setPriority((prevState) => ({
-      ...prevState,
-      name: tab,
-    }));
+  const handleTabChange = (tab: Priority) => {
+    setPriority(tab);
   };
   const dateDropdownRef = useRef<HTMLDivElement>(null);
   const timeDropdownRef = useRef<HTMLDivElement>(null);
@@ -104,13 +115,13 @@ const OnGoing: React.FC = () => {
   }, []);
 
   // Sample tasks data
-  const tasks: Task[] = [
-    { id: 1, title: 'Add Smooth Dragging Functionality in Popup', start: '05:00', end: '07:00', date: '17 July' },
-    { id: 2, title: 'Dragging Functionality', start: '15:00', end: '20:10', date: '19 July' },
-    { id: 3, title: 'Testing Of Master Todo', start: '1:00', end: '3:10', date: '20 July' },
-    { id: 4, title: 'Todo', start: '1:00', end: '3:00', date: '21 July' },
-    { id: 5, title: 'Appointment Updates', start: '2:00', end: '5:00', date: '22 July' },
-  ];
+  // const tasks: Task[] = [
+  //   { id: 1, title: 'Add Smooth Dragging Functionality in Popup', start: '05:00', end: '07:00', date: '17 July' },
+  //   { id: 2, title: 'Dragging Functionality', start: '15:00', end: '20:10', date: '19 July' },
+  //   { id: 3, title: 'Testing Of Master Todo', start: '1:00', end: '3:10', date: '20 July' },
+  //   { id: 4, title: 'Todo', start: '1:00', end: '3:00', date: '21 July' },
+  //   { id: 5, title: 'Appointment Updates', start: '2:00', end: '5:00', date: '22 July' },
+  // ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -157,7 +168,7 @@ const OnGoing: React.FC = () => {
         // Split the task into two tasks
         splitTasks.push({
           ...task,
-          end: '23:59',
+          end: '24:00',
           className: 'split-first',
         });
         splitTasks.push({
@@ -222,7 +233,7 @@ const OnGoing: React.FC = () => {
       setActiveDate(date.date()); // Set active date only if the date is within the current month
     }
   };
-  console.log(popupContent)
+  // console.log(popupContent)
   const datesOfMonth = getDatesOfMonth(currentMonth);
 
   const hours = Array.from({ length: 24 }, (_, i) => i); // Create an array of hours from 0 to 23
@@ -255,7 +266,7 @@ const handleTimelineClick = (hour: number): void => {
   const currentTimeMinute = moment().format('HH:mm:ss');
 
   const getFormattedTime = (time: moment.Moment, minutesToAdd: number): string => {
-    return time.clone().add(minutesToAdd, 'minutes').format('h:mm A');
+    return time.clone().add(minutesToAdd, 'minutes').format('HH:mm:ss');
   };
 
   if (currentTime.hour() === hour) {
@@ -280,9 +291,9 @@ const handleTimelineClick = (hour: number): void => {
       displayToastMessage('Cannot schedule tasks in the past.');
       return;
     } else {
-      startTime = formatHour.format('h:mm A');
+      startTime = formatHour.format('HH:mm:ss');
     }
-
+   console.log(startTime)
     setPopupContent(startTime);
     setIsPopupVisible(true);
     return; // Return early to prevent further actions
@@ -301,7 +312,7 @@ const handleTimelineClick = (hour: number): void => {
   }
 
   // If none of the above conditions matched, simply set the start time
-  const startTime = formatHour.format('h:mm A');
+  const startTime = formatHour.format('H:mm');
   setPopupContent(startTime);
   setIsPopupVisible(true);
 
@@ -330,6 +341,33 @@ function displayToastMessage(message: string): void {
   };
 
   const dateOptions = generateUpcomingDates();
+
+  const handleSubmitTask = () => {
+    const startTime = moment(popupContent,'H:mm'); 
+    const endTime = startTime.clone().add(estimatedTime, 'hours').format('H:mm');
+  console.log(endTime)
+    const newTask = {
+      id: tasks.length + 1,
+      title: newTaskTitle,
+      description: newTaskDescription,
+      date: selectedDate.format('D MMM'),  // Ensure the date is formatted correctly
+      start: popupContent,  // Format startTime as needed
+      end: endTime,
+      priority,
+    };
+    console.log(newTask)
+  
+    const tempTasks = [...tasks, newTask];
+    setTasks(tempTasks);
+    localStorage.setItem('tasks', JSON.stringify(tempTasks));
+  
+    setIsPopupVisible(false);
+    setNewTaskTitle('');
+    setNewTaskDescription('');
+  };
+  
+
+  // const dateOptions = Array.from({ length: 31 }, (_, i) => moment().date(i + 1));
 
   return (
     <div className="ongoing">
@@ -380,6 +418,8 @@ function displayToastMessage(message: string): void {
                   }}
                 >
                   <div className="task-title-box">{task.title}</div>
+                  <div className="task-description-box">{task.description}</div>
+                  <div className="task-description-box">{task.priority}</div>
                   <div className="time-box">{`${moment(task.start, 'HH:mm').format('h:mm A')} - ${moment(task.end, 'HH:mm').format('h:mm A')}`}</div>
                 </div>
               );
@@ -387,94 +427,107 @@ function displayToastMessage(message: string): void {
           </div>
         </div>
       </div>
+      <div className={`popup-overlay ${isPopupVisible ? 'show-over' : ''}`}></div>
       <div className={`popup ${isPopupVisible ? 'show' : ''}`}>
-        <div className="popup-header">
-          <div className="fe-box" onClick={() => setIsPopupVisible(false)}>Cancel</div>
-          <div className="main-box">New Task</div>
-          <div className="fe-box" >Done</div>
+      <div className="popup-header">
+        <div className="fe-box" onClick={() => setIsPopupVisible(false)}>Cancel</div>
+        <div className="main-box">New Task</div>
+        <div className="fe-box" onClick={handleSubmitTask}>Done</div>
+      </div>
+      <div className="task-form-box">
+        <div className="input-box">
+          {popupContent}
+          <div className="label-box">Title</div>
+          <input
+            type="text"
+            placeholder="Enter Task Title"
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+          />
         </div>
-        <div className="task-form-box">
-          <div className="input-box">
-            <div className="label-box">Title</div>
-            <input type="text" placeholder='Enter Task Title'/>
-          </div>
-          <div className="input-box">
-            <div className="label-box">Description</div>
-            <textarea placeholder='Enter Task Description'/>
-          </div>
+        <div className="input-box">
+          <div className="label-box">Description</div>
+          <textarea
+            placeholder="Enter Task Description"
+            value={newTaskDescription}
+            onChange={(e) => setNewTaskDescription(e.target.value)}
+          />
+        </div>
 
-          <div className="db-input-box">
-            <div className="input-box">
-              <div className="label-box">Date</div>
-              <div className="custom-dropdown" ref={dateDropdownRef}>
-                <div className={`selected-option ${isDateDropdownOpen?'bora':''}`} onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}>
-                  {selectedDate.format('D MMM')}  <Icon icon="uim:calender" className='icon-opt'/>
-                </div>
-                  <div className={`dropdown-options ${isDateDropdownOpen?'enlarge':''}`}>
-                    <div className="dropdown-option gapped-top"></div>
-                    {dateOptions.map((date, index) => (
-                      <div
-                        key={index}
-                        className={`dropdown-option ${selectedDate.isSame(date, 'day') ? 'active' : ''}`}
-                        onClick={() => {
-                          setSelectedDate(date);
-                          setIsDateDropdownOpen(false);
-                        }}
-                      >
-                        {date.format('D MMM')}
-                      </div>
-                    ))}
-                  </div>
+        <div className="db-input-box">
+          <div className="input-box">
+            <div className="label-box">Date</div>
+            <div className="custom-dropdown" ref={dateDropdownRef}>
+              <div
+                className={`selected-option ${isDateDropdownOpen ? 'bora' : ''}`}
+                onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
+              >
+                {selectedDate.format('D MMM')} <Icon icon="uim:calender" className="icon-opt" />
               </div>
-            </div>
-            <div className="input-box">
-              <div className="label-box">Estimated Time</div>
-              <div className="custom-dropdown" ref={timeDropdownRef}>
-                <div className={`selected-option ${isTimeDropdownOpen?'bora':''}`} onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}>
-                  {estimatedTime}h  <Icon icon="uim:clock" className='icon-opt'/>
-                </div>
-                {/* {isTimeDropdownOpen && ( */}
-                 <div className={`dropdown-options ${isTimeDropdownOpen?'enlarge':''}`}>
-                 <div className="dropdown-option gapped-top"></div>
-                    {Array.from({ length: 6 }, (_, i) => i + 2).map((hours) => (
-                      <div
-                        key={hours}
-                        className={`dropdown-option ${estimatedTime === hours ? 'active' : ''}`}
-                        onClick={() => {
-                          setEstimatedTime(hours);
-                          setIsTimeDropdownOpen(false);
-                        }}
-                      >
-                        {hours} hours
-                      </div>
-                    ))}
+              <div className={`dropdown-options ${isDateDropdownOpen ? 'enlarge' : ''}`}>
+                <div className="dropdown-option gapped-top"></div>
+                {dateOptions.map((date, index) => (
+                  <div
+                    key={index}
+                    className={`dropdown-option ${selectedDate.isSame(date, 'day') ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedDate(date);
+                      setIsDateDropdownOpen(false);
+                    }}
+                  >
+                    {date.format('D MMM')}
                   </div>
+                ))}
               </div>
             </div>
           </div>
-          
           <div className="input-box">
+            <div className="label-box">Estimated Time</div>
+            <div className="custom-dropdown" ref={timeDropdownRef}>
+              <div
+                className={`selected-option ${isTimeDropdownOpen ? 'bora' : ''}`}
+                onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
+              >
+                {estimatedTime}h <Icon icon="uim:clock" className="icon-opt" />
+              </div>
+              <div className={`dropdown-options ${isTimeDropdownOpen ? 'enlarge' : ''}`}>
+                <div className="dropdown-option gapped-top"></div>
+                {Array.from({ length: 6 }, (_, i) => i + 2).map((hours) => (
+                  <div
+                    key={hours}
+                    className={`dropdown-option ${estimatedTime === hours ? 'active' : ''}`}
+                    onClick={() => {
+                      setEstimatedTime(hours);
+                      setIsTimeDropdownOpen(false);
+                    }}
+                  >
+                    {hours} hours
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="input-box">
           <div className="label-box">Priority</div>
           <div className="tab-container">
-          {['low', 'medium', 'high'].map((tab) => (
-          <div
-            key={tab}
-            className={`tab ${priority.name === tab ? 'active' : ''} `}
-            onClick={() => handleTabChange(tab)}
-            // style={priority.name === tab ? { background: priority.backColor } : {}}
-          >
-            <div  className={`priority-decor-tab ${priority.name === tab ? 'active' : ''} ${priority.name === 'low' ? 'low' : ''} ${priority.name === 'medium' ? 'medium' : ''} ${priority.name === 'high' ? 'high' : ''}`}
-            ></div>
-            {tab}
+            {['low', 'medium', 'high'].map((tab) => (
+              <div
+                key={tab}
+                className={`tab ${priority === tab ? 'active' : ''}`}
+                onClick={() => handleTabChange(tab as Priority)}
+              >
+                <div
+                  className={`priority-decor-tab ${priority === tab ? 'active' : ''} ${priority === 'low' ? 'low' : ''} ${priority === 'medium' ? 'medium' : ''} ${priority === 'high' ? 'high' : ''}`}
+                ></div>
+                {tab}
+              </div>
+            ))}
           </div>
-        ))}
-
-      </div>
-      </div>
-
         </div>
-        {/* {popupContent}   */}
       </div>
+    </div>
       <div className={`toast ${toastMessage ? 'showtoast' : ''}`}>{toastMessage}</div>
     </div>
   );

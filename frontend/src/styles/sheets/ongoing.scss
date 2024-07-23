@@ -224,6 +224,23 @@ $CurrentMonth : "Poppins", sans-serif;
     }
   }
   
+  .popup-overlay{
+    position: fixed;
+    z-index: 2;
+    width: 100%;
+    height: 100vh;
+    bottom: 0;
+    background-color: #0003;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 400ms ease;
+    transition-delay: 400ms;
+    &.show-over{
+      transition-delay: 0ms;
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
 
   .popup {
     position: absolute;
@@ -232,8 +249,7 @@ $CurrentMonth : "Poppins", sans-serif;
     width: 100%;
     max-width: 450px;
     bottom: -100%;
-    // background: #fff;
-    background: #0002;
+    background: #fff7;
     backdrop-filter: blur(10px);
     padding: 20px 20px 60px 20px;
     border-radius: 20px 20px 0 0;
