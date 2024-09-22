@@ -52,7 +52,7 @@ const Dash: React.FC = () => {
         </div>
       </div>
       <div className="dash-user">
-        <div className="user-name">Hi Maroof</div>
+        <div className="user-name">Hi Maroof Ahmad</div>
         <div className="pending-tasks">6 Tasks are pending</div>
         <div className="browser-info">Browser: {browser}</div>
       </div>
